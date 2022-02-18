@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="ID=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+       <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.1-rc.0/web3.min.js"></script> 
+       <script>
+         let web3;
+         let account;
+
+          async function init(){
+              if(window.ethereum){
+                //inicializa carteira
+                
+                web3 = new Web3(window.ethereum);
+                try{
+                    const eth =  window.ethereum;
+                    const accounts = await ethereum.request({method: 'eth_requestAccounts'});
+                    account = accounts[0];
+
+                    const sign = await ethereum.request({method:'personal_sign', "params": ["eu sou o dono da conta", account]});
+                    console.log(sign);
+
+                    const contaVerificada = web3.eth.accounts.recover("Eu sou o dono da conta", sign);
+                    console.log(contaVerificada);
+
+                    let balance = await web3.eth.getBalance(account);
+                  
+                    document.getElementById('balanceHtml').innerHTML='$ '+ web3.utils.fromWei(balance,"ether");
+                  
+
+                    /*
+                    const transactionParameters = {
+                        nonce: '0x00', // ignored by MetaMask
+                        to: '0xa75637B8b006BD5a491a51B1FCe8b31eA8C212AA', // Required except during contract publications.
+                        from: account, // must match user's active address.
+                        value: parseInt(web3.utils.toWei("3","ether")).toString(16), // Only required to send ether to the recipient from the initiating external account.
+                        };
+
+                        // txHash is a hex string
+                        // As with any RPC call, it may throw an error
+                        const txHash = await ethereum.request({
+                        method: 'eth_sendTransaction',
+                        params: [transactionParameters],
+                        });
+                        */
+
+
+                        /*
+                        web3.eth.sendTransaction({
+                            from: account,
+                            to: '0x11f4d0A3c12e86B4b5F39B213F7E19D048276DAe',
+                            value: '1000000000000000'
+                        })
+                        .then(function(receipt){
+                                console.log(receipt);
+                        });
+                        */
+
+                }catch(error){
+
+                }
+              }else{
+                  alert("Não possui a carteira instalada!");
+              }
+          }  
+
+          function send(){
+            
+            let qtd = document.getElementById('quantidade').value;
+            let address = document.getElementById('address').value;
+           
+            web3.eth.sendTransaction({
+                            from: account,
+                            to: address,
+                            value: web3.utils.toWei(qtd,"ether")
+                        })
+                        .then(function(receipt){
+                                console.log(receipt);
+                        });
+
+          }
+
+        init();
+       </script>
+       <div style="text-align: center; margin-top: 100px;">
+             <h1 id="balanceHtml">$0,0000</h1><br>
+             <h2>ethereum</h2><br>
+             <h1>Enviar ethereum:</h1><br>
+
+             Informe a quantidade : <input type="text" id="quantidade"><p>
+             Informe o endereço : <input type="text" id="address"><p>
+             <input type="submit" onclick="send()">
+       </div>
+    </body>
+</html>
